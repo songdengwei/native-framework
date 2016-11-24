@@ -4,6 +4,9 @@ var vpEvents = ('ontouchstart' in window) ? {start: 'touchstart', move: 'touchmo
 //命名空间
 var _vp = _vp || {};
 
+//版本号
+_vp.v = '?v=1.0' || '';
+
 //工具方法
 
 /* 
@@ -176,6 +179,25 @@ _vp.layerHint = function( tit, txt, hide ){
         ev.preventDefault()
     })
 }
+/* 
+ *  加载层 
+ *  show : function 显示加载
+ *  hide ：function 移除加载
+ *
+*/
+_vp.loading = {
+    html : '<div id="loading" style="display:block" class="layerHint loading_layer">\
+        <div class="layer_cont">\
+            <img src="img/oval.svg" alt="" />\
+        </div>\
+    </div>',
+    show : function(){
+        $('body').append(this.html);
+    },
+    hide : function(){
+        $('#loading').remove();
+    }
+}
 
 //jquery扩展
 //显示隐藏
@@ -226,21 +248,31 @@ _vp.layerHint = function( tit, txt, hide ){
 //……
 //公共方法
 
-//哈希值跳转
+//哈希值跳转缓存
 _vp.loadName = {
     names : [  ]
 };
 //加载视图
 _vp.tabsView = function(parent, name, vessel){
-    if( _vp.loadName.names.indexOf( name ) >= 0 ) {
-        _vp.moveView(parent, name)
+    if( _vp.loadName.names.indexOf( name ) >= 0 ) {  
+        _vp.moveView(parent, name)      //移动视图
     }else{
         if(name){
-            vessel.load('../template/' + name + '.html', function(data){
+            _vp.loading.show();
+            vessel.load('../template/' + name + '.html', function(data,status){
+                //没有找到对应的页面
+                if(status == 'error'){
+                    console.log('There is no corresponding page!');
+                    _vp.loading.hide();
+                    return false
+                }
+                //把页面添加到index
                 parent.append(data);
-                loadScript('/js/controller/' + name + '.js', {async : true}, function( ){
-                    _vp.loadName.names.push(name);
-                    _vp.moveView(parent, name)
+                //加载对应的js文件
+                loadScript('/js/controller/' + name + '.js' + _vp.v, {async : true}, function( ){
+                    _vp.loadName.names.push(name);  //防止多重加载
+                    _vp.loading.hide();             //关闭加载层
+                    _vp.moveView(parent, name);     //移动视图
                 })
             })
         }
@@ -248,9 +280,12 @@ _vp.tabsView = function(parent, name, vessel){
 }
 //视图动画
 _vp.moveView = function(parent, name){
-    var box = $('.modBox', parent);
+    var box = $('.modBox', parent),     //视图里面的每个模块
+        title = $('#header h1');        //index里面的标题
+    //遍历每个模块给对应的加上样式
     box.each(function(){
         if($(this).attr('id') === name){
+            title.html($(this).attr('title'));
             $(this).addClass('activate');
         }else{
             $(this).removeClass('activate');
@@ -262,15 +297,15 @@ _vp.uiHash = function(){
     var parent = $('#view'),
         vessel = $('#cacheRegion'),
         name = $.hash('viewName') || null;
-
+    //跳转
     $('[ui-sref]').on(vpEvents.start, function(){
         $.hash('viewName', $(this).attr('ui-sref'));
     })
-
+    //加载自运行
     if(name){
         _vp.tabsView(parent, name, vessel);
     }
-
+    //监控哈希值的改变
     window.onhashchange = function( ){
         name = $.hash('viewName') || null;
         _vp.tabsView(parent, name, vessel);
