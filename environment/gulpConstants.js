@@ -1,9 +1,9 @@
 module.exports = function() {
     var gulpConstants = {
-        
+        basePath: 'dist/',
         browser: {
             server: {
-                baseDir: "./www"
+                baseDir: "./dist"
                 // middleware: [historyApiFallback()]
             },
             host: 'localhost',
@@ -12,16 +12,37 @@ module.exports = function() {
             logPrefix: 'BS'
         },
         style: {
-            src: 'www/css/*.css'
+            src: 'www/css/*.css',
+            output: 'main.css',
+            dest: 'css'
         },
-        img: {
-            src: 'www/img/*.*'
+        image: {
+            src: 'www/img/*.*',
+            dest: 'img'
         },
         html: {
-            src: 'www/src/template/*.html'
+            index: 'www/index.html',
+            src: 'www/src/**/*.html',
+            dest: 'src'
+        },
+        font: {
+            src: 'www/font/*.*',
+            dest: 'font'
         },
         js: {
-            src: ['www/src/*.js', 'www/src/controller/*.js']
+            src: ['www/src/*.js', 'www/src/**/*.js'],
+            dest: 'src'
+        },
+        minify: {
+            js: '-m toplevel',
+            html: {
+                collapseBooleanAttributes: true,
+                collapseWhitespace: true
+            },
+            css: {
+                compatibility: 'ie8',
+                keepSpecialComments: 0
+            }
         }
     };
     return gulpConstants;

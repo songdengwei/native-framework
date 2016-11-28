@@ -2,7 +2,7 @@
 var vpEvents = ('ontouchstart' in window) ? {start: 'touchstart', move: 'touchmove', end: 'touchend'} : {start: 'click', move: 'mousemove', end: 'mouseup'};
 
 //命名空间
-var _vp = _vp || {};
+window._vp = window._vp || {};
 
 //版本号
 _vp.v = '?v=1.0' || '';
@@ -424,9 +424,5 @@ _vp.setFixed = function( obj ){
 //首页
 _vp.index = function( ){
 
-}
-
-//内页1
-_vp.page1 = function( ){
 
 }
