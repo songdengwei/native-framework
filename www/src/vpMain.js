@@ -24,6 +24,7 @@ _vp.uaCss = function( $obj, key, val ){
   $obj.css(key, val);
 };
 
+
 /* 
  *  背景音乐 
  *  @param { btn, media }
@@ -259,7 +260,7 @@ _vp.tabsView = function(parent, name, vessel){
     }else{
         if(name){
             _vp.loading.show();
-            vessel.load('../template/' + name + '.html', function(data,status){
+            vessel.load('/src/template/' + name + '.html', function(data,status){
                 //没有找到对应的页面
                 if(status == 'error'){
                     console.log('There is no corresponding page!');
@@ -269,7 +270,7 @@ _vp.tabsView = function(parent, name, vessel){
                 //把页面添加到index
                 parent.append(data);
                 //加载对应的js文件
-                loadScript('/js/controller/' + name + '.js' + _vp.v, {async : true}, function( ){
+                loadScript('/src/controller/' + name + '.js' + _vp.v, {async : true}, function( ){
                     _vp.loadName.names.push(name);  //防止多重加载
                     _vp.loading.hide();             //关闭加载层
                     _vp.moveView(parent, name);     //移动视图
