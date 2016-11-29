@@ -423,6 +423,4 @@ _vp.setFixed = function( obj ){
 //页面方法
 //首页
 _vp.index = function( ){
-
-
 }

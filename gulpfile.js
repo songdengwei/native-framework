@@ -13,22 +13,22 @@ var _ = require('lodash');
 var constants = require('./environment/gulpConstants')();
 
 //定义监控事件
-gulp.task('styleWatch', function() {
+gulp.task('styleWatch', ['style'], function() {
     browserSync.reload();
     });
-    gulp.task('htmlWatch', function() {
+    gulp.task('htmlWatch', ['html'], function() {
         browserSync.reload();
     });
-    gulp.task('imgWatch', function() {
+    gulp.task('imgWatch', ['img'], function() {
         browserSync.reload();
     });
-    gulp.task('jsWatch', function() {
+    gulp.task('jsWatch', ['js'], function() {
         browserSync.reload();
     });
-    gulp.task('indexWatch', function() {
+    gulp.task('indexWatch', ['index'], function() {
         browserSync.reload();
     });
-    gulp.task('fontWatch', function() {
+    gulp.task('fontWatch', ['font'], function() {
         browserSync.reload();
     });
 
