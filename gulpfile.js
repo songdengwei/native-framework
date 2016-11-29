@@ -15,22 +15,22 @@ var constants = require('./environment/gulpConstants')();
 //定义监控事件
 gulp.task('styleWatch', function() {
     browserSync.reload();
-});
-gulp.task('htmlWatch', function() {
-    browserSync.reload();
-});
-gulp.task('imgWatch', function() {
-    browserSync.reload();
-});
-gulp.task('jsWatch', function() {
-    browserSync.reload();
-});
-gulp.task('indexWatch', function() {
-    browserSync.reload();
-});
-gulp.task('fontWatch', function() {
-    browserSync.reload();
-});
+    });
+    gulp.task('htmlWatch', function() {
+        browserSync.reload();
+    });
+    gulp.task('imgWatch', function() {
+        browserSync.reload();
+    });
+    gulp.task('jsWatch', function() {
+        browserSync.reload();
+    });
+    gulp.task('indexWatch', function() {
+        browserSync.reload();
+    });
+    gulp.task('fontWatch', function() {
+        browserSync.reload();
+    });
 
 //在浏览器上面运行
 gulp.task('serve', [argv.release ? 'dist' : 'filesWatch'], function() {
@@ -48,36 +48,36 @@ gulp.task('serve', [argv.release ? 'dist' : 'filesWatch'], function() {
 
 //生成压缩文件
 gulp.task('dist', ['style', 'font', 'img', 'html', 'index', 'js']);
-gulp.task('style', function(){
-    return  gulp.src(constants.style.src)
-            .pipe(concat(constants.style.output))
-            .pipe(gulpIf(argv.release, cleanCSS(constants.minify.css)))
-            .pipe(gulp.dest(constants.basePath + constants.style.dest))
-})
-gulp.task('js', function(){
-    return  gulp.src(constants.js.src)
-            .pipe(gulpIf(argv.release, uglify(constants.minify.js)))
-            .pipe(gulp.dest(constants.basePath + constants.js.dest))
-})
-gulp.task('font', function() {
-    return gulp.src(constants.font.src)
-        .pipe(gulp.dest(constants.basePath + constants.font.dest));
-});
-gulp.task('img', function() {
-    return gulp.src(constants.image.src)
-        .pipe(gulpIf(argv.release, imagemin()))
-        .pipe(gulp.dest(constants.basePath + constants.image.dest));
-});
-gulp.task('html', function() {
-    return gulp.src(constants.html.src)
-        .pipe(htmlmin(constants.minify.html))
-        .pipe(gulp.dest(constants.basePath + constants.html.dest));
-});
-gulp.task('index', function() {
-    return gulp.src(constants.html.index)
-        .pipe(htmlmin(constants.minify.html))
-        .pipe(gulp.dest(constants.basePath));
-});
+    gulp.task('style', function(){
+        return  gulp.src(constants.style.src)
+                .pipe(concat(constants.style.output))
+                .pipe(gulpIf(argv.release, cleanCSS(constants.minify.css)))
+                .pipe(gulp.dest(constants.basePath + constants.style.dest))
+    })
+    gulp.task('js', function(){
+        return  gulp.src(constants.js.src)
+                .pipe(gulpIf(argv.release, uglify(constants.minify.js)))
+                .pipe(gulp.dest(constants.basePath + constants.js.dest))
+    })
+    gulp.task('font', function() {
+        return gulp.src(constants.font.src)
+            .pipe(gulp.dest(constants.basePath + constants.font.dest));
+    });
+    gulp.task('img', function() {
+        return gulp.src(constants.image.src)
+            .pipe(gulpIf(argv.release, imagemin()))
+            .pipe(gulp.dest(constants.basePath + constants.image.dest));
+    });
+    gulp.task('html', function() {
+        return gulp.src(constants.html.src)
+            .pipe(htmlmin(constants.minify.html))
+            .pipe(gulp.dest(constants.basePath + constants.html.dest));
+    });
+    gulp.task('index', function() {
+        return gulp.src(constants.html.index)
+            .pipe(htmlmin(constants.minify.html))
+            .pipe(gulp.dest(constants.basePath));
+    });
 
 //监控服务
 gulp.task('filesWatch', ['dist'], function(){
@@ -87,7 +87,7 @@ gulp.task('filesWatch', ['dist'], function(){
     watch(constants.html.src, function() {
         gulp.start('htmlWatch');
     });
-    watch(constants.img.src, function() {
+    watch(constants.image.src, function() {
         gulp.start('imgWatch');
     });
     watch(constants.js.src, function() {

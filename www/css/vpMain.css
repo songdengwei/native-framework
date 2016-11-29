@@ -94,11 +94,9 @@ input[type="button"],input[type="submit"],input[type="text"],input[type="tel"],t
     0%{   -webkit-transform: translate3d(100%, 0, 0); transform: translate3d(100%, 0, 0);  opacity: 1;}
     100%{ -webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0); opacity: 1;}
 }
-
 /************  end   *************/
 
 /****** 页面样式 start ******/
-
 /* 表单样式 */
 .vp_form{padding: 0px 10px;}
 .vp_form_line{width: 100%;line-height: 39px;height: 40px;border-bottom:1px solid #E7EFF3;position: relative;background: #fff;padding-left: 100px;}
