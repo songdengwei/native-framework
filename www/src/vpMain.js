@@ -24,7 +24,6 @@ _vp.uaCss = function( $obj, key, val ){
   $obj.css(key, val);
 };
 
-
 /* 
  *  背景音乐 
  *  @param { btn, media }
@@ -78,6 +77,15 @@ _vp.backend = [
     }
 ];
 
+//获取参数
+function getQueryStringByName(name) {
+    var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
+    if (result == null || result.length < 1) {
+        return "";
+    }
+    return result[1];
+}
+
 /* 
  *  从backend里面判断接口名在哪一个对象里面 
  *  name ：string 接口名（带父级如''user/log'）
@@ -106,6 +114,10 @@ _vp.post = function( ctrl, name, param ){
         ctrlAndName = ctrl == "" ? name : (ctrl + '/' + name),
         backendDetail = getBackendDetail(ctrlAndName),
         serviceData = param || {};
+
+
+    _vp.loading.show();
+
     //防止post重复呼叫
     if(_vp.postCount[ctrlAndName]){
         def.reject();
@@ -119,6 +131,7 @@ _vp.post = function( ctrl, name, param ){
             type:'post',
             dataType:"json",
             success:function( data ){
+                _vp.loading.hide();
                 _vp.postCount[ctrlAndName] = undefined;
                 if(data.ResultCode == 1000){
                     def.resolve(data);
@@ -128,6 +141,7 @@ _vp.post = function( ctrl, name, param ){
                 def.resolve( data );
             },
             error:function( err ){
+                _vp.loading.hide();
                 _vp.postCount[ctrlAndName] = undefined;
                  _vp.layerHint( '温馨提示', err.Message, true );
                 def.reject( err );
@@ -260,7 +274,7 @@ _vp.tabsView = function(parent, name, vessel){
     }else{
         if(name){
             _vp.loading.show();
-            vessel.load('/src/template/' + name + '.html', function(data,status){
+            vessel.load('/src/template/' + name + '.html', function(data, status){
                 //没有找到对应的页面
                 if(status == 'error'){
                     console.log('There is no corresponding page!');
