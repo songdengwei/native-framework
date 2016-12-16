@@ -3,4 +3,5 @@ _vp.log = function(){
     _vp.formVerify('.vp_form', function(data){
         _vp.layerHint('提示！', '表单参数：'+ JSON.stringify(data));
     })
+    console.log(_vp.meteor.sdw);
 }();

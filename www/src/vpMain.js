@@ -77,6 +77,19 @@ _vp.backend = [
     }
 ];
 
+/* 
+ *  遍历
+ */
+function forEach(nodeList, callback){
+    if(Array.prototype.forEach){
+        Array.prototype.forEach.call( nodeList, callback );
+    }else{
+        for(var i = 0; i < nodeList.length; i++){
+            callback( nodeList[i], i );
+        }
+    }
+}
+
 //获取参数
 function getQueryStringByName(name) {
     var result = location.search.match(new RegExp("[\?\&]" + name + "=([^\&]+)", "i"));
@@ -267,6 +280,31 @@ _vp.loading = {
 _vp.loadName = {
     names : [  ]
 };
+_vp.repeat = function(obj){
+    if(obj){
+        
+    }
+};
+
+//跳转
+_vp.go = function(name, param){  
+    var url ='';
+    var href = window.location.href;
+
+    if(href.indexOf('?') != -1){
+        href = href.split('?')[0];
+    }else if(href.indexOf('#') != -1){
+        href = href.split('#')[0];
+    }
+
+    if(param){
+        url = $.param(param);
+        window.location.href = href + '?' + url + '#viewName='+ name;
+    }else{
+        window.location.href = href  + '#viewName='+ name;
+    }
+    
+}
 //加载视图
 _vp.tabsView = function(parent, name, vessel){
     if( _vp.loadName.names.indexOf( name ) >= 0 ) {  
@@ -314,7 +352,7 @@ _vp.uiHash = function(){
         name = $.hash('viewName') || null;
     //跳转
     $('[ui-sref]').on(vpEvents.start, function(){
-        $.hash('viewName', $(this).attr('ui-sref'));
+        _vp.go( $(this).attr('ui-sref') )
     })
     //加载自运行
     if(name){
@@ -437,4 +475,7 @@ _vp.setFixed = function( obj ){
 //页面方法
 //首页
 _vp.index = function( ){
+    $('.goSign').on( vpEvents.start, function(){
+        _vp.go('sign', { name : 'jedy', sex: 20 })
+    })
 }

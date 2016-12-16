@@ -1,1 +1,4 @@
-console.log(111);
+_vp.meteor = function(){
+	//提交表单
+	
+}();

@@ -4,4 +4,6 @@ _vp.sign = function(){
         console.log(data);
         _vp.layerHint('提示！', '表单参数：'+ JSON.stringify(data));
     })
+
+    console.log(getQueryStringByName('name'));
 }();
