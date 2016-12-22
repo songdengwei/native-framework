@@ -280,38 +280,69 @@ _vp.loading = {
 _vp.loadName = {
     names : [  ]
 };
-_vp.repeat = function(obj){
-    if(obj){
-        
-    }
-};
+//当前视图
+_vp.atView = '';
+
+//视图跳转后回调
+_vp.callback = false;
 
 //跳转
-_vp.go = function(name, param){  
+_vp.go = function(name, param, isLoad, fn){  
     var url ='';
     var href = window.location.href;
 
-    if(href.indexOf('?') != -1){
-        href = href.split('?')[0];
-    }else if(href.indexOf('#') != -1){
-        href = href.split('#')[0];
+    //window.location.hash = '';
+
+    //序列化
+    if(param){
+        for (val in param){
+            url += ';' + val + '=' + param[val]
+        }
     }
 
-    if(param){
-        url = $.param(param);
-        window.location.href = href + '?' + url + '#viewName='+ name;
-    }else{
-        window.location.href = href  + '#viewName='+ name;
+    //true重新加载
+    if(isLoad){
+        url += ';viewCache=true';
     }
-    
+
+    //跳转后回调
+    if(fn){
+        _vp.callback = fn;
+    }else{
+        _vp.callback = false;
+    }
+    url = ';viewName=' + name + url;
+
+    //哈希跳转
+    window.location.hash = url;
 }
+
 //加载视图
-_vp.tabsView = function(parent, name, vessel){
+_vp.tabsView = function(parent, name, vessel, isLoad, direction){
+    _vp.atView = name;
+    if(isLoad){
+        for(var i=0; i < _vp.loadName.names.length; i++){
+            if(_vp.loadName.names[i] == name){
+                _vp.loadName.names.splice(i,1);
+            }
+        }
+    }
+
     if( _vp.loadName.names.indexOf( name ) >= 0 ) {  
-        _vp.moveView(parent, name)      //移动视图
+        _vp.moveView(parent, name, direction)      //移动视图
     }else{
         if(name){
             _vp.loading.show();
+            //去掉当前页面
+            if(isLoad){
+                var box = $('.modBox', parent);
+                box.each(function(i, d){
+                    if($(this).attr('id') === name){
+                        $(this).remove();
+                    }
+                })
+            }
+            //加载对应的页面跟js
             vessel.load('/src/template/' + name + '.html', function(data, status){
                 //没有找到对应的页面
                 if(status == 'error'){
@@ -325,31 +356,53 @@ _vp.tabsView = function(parent, name, vessel){
                 loadScript('/src/controller/' + name + '.js' + _vp.v, {async : true}, function( ){
                     _vp.loadName.names.push(name);  //防止多重加载
                     _vp.loading.hide();             //关闭加载层
-                    _vp.moveView(parent, name);     //移动视图
+                    _vp.moveView(parent, name, direction);     //移动视图
                 })
             })
         }
     }
 }
 //视图动画
-_vp.moveView = function(parent, name){
+_vp.moveView = function(parent, name, direction){
     var box = $('.modBox', parent),     //视图里面的每个模块
         title = $('#header h1');        //index里面的标题
     //遍历每个模块给对应的加上样式
     box.each(function(){
         if($(this).attr('id') === name){
+            if($(this).attr('noTitle')){
+                title.parent().hide();
+            }else{
+                title.parent().show();
+            }
             title.html($(this).attr('title'));
-            $(this).addClass('activate');
+            if(direction){
+                $(this).show().addClass('move_reverse');
+            }else{
+                $(this).show().addClass('move_activate');
+            }
+
+            $(this).one('webkitAnimationEnd', function () {
+                if(_vp.callback){
+                    _vp.callback();
+                }
+            });
         }else{
-            $(this).removeClass('activate');
+            $(this).attr('class','modBox').hide();
         }
-    })
+    }) 
+    //跳转
+    $('[ui-sref]').on(vpEvents.start, function(){
+        _vp.go( $(this).attr('ui-sref') )
+    }) 
 }
 //监控制图
 _vp.uiHash = function(){
     var parent = $('#view'),
         vessel = $('#cacheRegion'),
+        direction = false,
         name = $.hash('viewName') || null;
+
+        _vp.atView = name;
     //跳转
     $('[ui-sref]').on(vpEvents.start, function(){
         _vp.go( $(this).attr('ui-sref') )
@@ -361,8 +414,22 @@ _vp.uiHash = function(){
     //监控哈希值的改变
     window.onhashchange = function( ){
         name = $.hash('viewName') || null;
-        _vp.tabsView(parent, name, vessel);
+        var isLoad = $.hash('viewCache') || false;
+
+        this.history.replaceState('hasHash', '', '');
+
+        if(_vp.atView !== name){
+            _vp.tabsView(parent, name, vessel, isLoad, direction);
+        }
     };
+    //监控跳转
+    window.addEventListener('popstate', function(e) {
+        if (e.state) {
+            direction = true;
+        }else{
+            direction = false;
+        }
+    }, false);
 }
 _vp.uiHash();
 
@@ -476,6 +543,8 @@ _vp.setFixed = function( obj ){
 //首页
 _vp.index = function( ){
     $('.goSign').on( vpEvents.start, function(){
-        _vp.go('sign', { name : 'jedy', sex: 20 })
+        _vp.go('sign', { name : 'jedy', sex: 20 }, true, function(){
+            $('.vp_form',$('#sign')).submit();
+        })
     })
 }
