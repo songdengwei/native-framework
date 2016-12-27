@@ -9,7 +9,6 @@
 	-webkit-animation: meteor1 5s ease-in 1s infinite;
 }
 .meteor li:nth-of-type(2){
-
 	-webkit-animation: meteor1 5s ease-in 2s infinite;
 	left:85%;
 }

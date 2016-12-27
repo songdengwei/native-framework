@@ -1,11 +1,13 @@
 //鼠标事件兼容
-var vpEvents = ('ontouchstart' in window) ? {start: 'touchstart', move: 'touchmove', end: 'touchend'} : {start: 'click', move: 'mousemove', end: 'mouseup'};
+window.vpEvents = ('ontouchstart' in window) ? {start: 'touchstart', move: 'touchmove', end: 'touchend'} : {start: 'click', move: 'mousemove', end: 'mouseup'};
 
 //命名空间
 window._vp = window._vp || {};
 
 //版本号
 _vp.v = '?v=1.0' || '';
+
+
 
 //工具方法
 
@@ -88,7 +90,7 @@ function forEach(nodeList, callback){
             callback( nodeList[i], i );
         }
     }
-}
+};
 
 //获取参数
 function getQueryStringByName(name) {
@@ -97,8 +99,11 @@ function getQueryStringByName(name) {
         return "";
     }
     return result[1];
-}
-
+};
+//判断是不是函数
+function isFunction(fn) {
+   return Object.prototype.toString.call(fn) === '[object Function]';
+};
 /* 
  *  从backend里面判断接口名在哪一个对象里面 
  *  name ：string 接口名（带父级如''user/log'）
@@ -112,7 +117,7 @@ function getBackendDetail( name ) {
         }
     }
     return backendDetail;
-}
+};
 
 /* 
  *  post请求方法 
@@ -162,7 +167,7 @@ _vp.post = function( ctrl, name, param ){
         });
     }
     return def.promise();
-}
+};
 
 /* 
  *  弹层提示 
@@ -206,7 +211,7 @@ _vp.layerHint = function( tit, txt, hide ){
         });
         ev.preventDefault()
     })
-}
+};
 /* 
  *  加载层 
  *  show : function 显示加载
@@ -225,7 +230,7 @@ _vp.loading = {
     hide : function(){
         $('#loading').remove();
     }
-}
+};
 
 //jquery扩展
 //显示隐藏
@@ -286,7 +291,13 @@ _vp.atView = '';
 //视图跳转后回调
 _vp.callback = false;
 
-//跳转
+/*
+ * 跳转
+ * name 跳转名字
+ * param 参数
+ * isLoad 是否重新加载
+ * fn 回调函数
+*/
 _vp.go = function(name, param, isLoad, fn){  
     var url ='';
     var href = window.location.href;
@@ -301,21 +312,24 @@ _vp.go = function(name, param, isLoad, fn){
     }
 
     //true重新加载
-    if(isLoad){
-        url += ';viewCache=true';
+    if(!isFunction(isLoad)){
+        url += isLoad?';viewCache=true':'';
+        //跳转后回调
+        if(fn){
+            _vp.callback = fn;
+        }else{
+            _vp.callback = false;
+        }
+    }else{
+        _vp.callback = isLoad;
     }
 
-    //跳转后回调
-    if(fn){
-        _vp.callback = fn;
-    }else{
-        _vp.callback = false;
-    }
+    
     url = ';viewName=' + name + url;
 
     //哈希跳转
     window.location.hash = url;
-}
+};
 
 //加载视图
 _vp.tabsView = function(parent, name, vessel, isLoad, direction){
@@ -357,11 +371,12 @@ _vp.tabsView = function(parent, name, vessel, isLoad, direction){
                     _vp.loadName.names.push(name);  //防止多重加载
                     _vp.loading.hide();             //关闭加载层
                     _vp.moveView(parent, name, direction);     //移动视图
+                    var myScroll = new IScroll($('#'+ name)[0]);    //初始化滚动
                 })
             })
         }
     }
-}
+};
 //视图动画
 _vp.moveView = function(parent, name, direction){
     var box = $('.modBox', parent),     //视图里面的每个模块
@@ -369,32 +384,39 @@ _vp.moveView = function(parent, name, direction){
     //遍历每个模块给对应的加上样式
     box.each(function(){
         if($(this).attr('id') === name){
+            //是否显示标题
             if($(this).attr('noTitle')){
                 title.parent().hide();
+                $(this).removeClass('pb50');
             }else{
                 title.parent().show();
+                $(this).addClass('pb50');
             }
             title.html($(this).attr('title'));
+            //切换方向
             if(direction){
                 $(this).show().addClass('move_reverse');
             }else{
                 $(this).show().addClass('move_activate');
             }
-
+           
+            //回调
             $(this).one('webkitAnimationEnd', function () {
                 if(_vp.callback){
                     _vp.callback();
                 }
             });
+
         }else{
             $(this).attr('class','modBox').hide();
         }
     }) 
+    
     //跳转
     $('[ui-sref]').on(vpEvents.start, function(){
         _vp.go( $(this).attr('ui-sref') )
     }) 
-}
+};
 //监控制图
 _vp.uiHash = function(){
     var parent = $('#view'),
@@ -424,13 +446,9 @@ _vp.uiHash = function(){
     };
     //监控跳转
     window.addEventListener('popstate', function(e) {
-        if (e.state) {
-            direction = true;
-        }else{
-            direction = false;
-        }
+        direction = e.state?true:false;
     }, false);
-}
+};
 _vp.uiHash();
 
 /**
@@ -521,7 +539,7 @@ _vp.formVerify = function( form, fn ){
         }
         return false
     })
-}
+};
 
 /**
  *   设置层的自动居中定位，并且为 fixed
@@ -542,9 +560,5 @@ _vp.setFixed = function( obj ){
 //页面方法
 //首页
 _vp.index = function( ){
-    $('.goSign').on( vpEvents.start, function(){
-        _vp.go('sign', { name : 'jedy', sex: 20 }, true, function(){
-            $('.vp_form',$('#sign')).submit();
-        })
-    })
-}
+
+};

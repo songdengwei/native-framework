@@ -12,7 +12,7 @@ module.exports = function() {
             logPrefix: 'BS'
         },
         style: {
-            src: 'www/css/*.css',
+            src: ['www/css/vpMain.css', 'www/css/style.css', 'www/css/*.css'],
             output: 'main.css',
             dest: 'css'
         },

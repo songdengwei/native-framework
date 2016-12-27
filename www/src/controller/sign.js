@@ -3,7 +3,5 @@ _vp.sign = function(){
     _vp.formVerify('.vp_form', function(data){
         console.log(data);
         _vp.layerHint('提示！', '表单参数：'+ JSON.stringify(data));
-    })
-
-    console.log($.hash('name'));
+    });
 }();
