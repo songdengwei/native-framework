@@ -398,10 +398,9 @@ _vp.moveView = function(parent, name, direction){
             //是否显示标题
             if($(this).attr('noTitle')){
                 title.parent().hide();
-                $(this).removeClass('pb50');
+                $(this).addClass('pb0');
             }else{
                 title.parent().show();
-                $(this).addClass('pb50');
             }
             title.html($(this).attr('title'));
             //切换方向
@@ -473,6 +472,54 @@ _vp.loadIon = {
     },
     hide: function(id){
         $('#loadIon',$(id)).remove();
+    }
+}
+/* 上拉下拉加载刷新 */
+_vp.pullDown = function(name, fn1, fn2){
+    /* 上拉加载、下拉刷新 */
+    var isLoad = true;
+    /* 每个页面对应的滚动的名字都一定好了都是_vp.[name]Scroll   name就是页面的名字*/
+    _vp[name + 'Scroll'].on('scroll', function(){
+        if(isLoad){
+            if(parseInt(this.y) < parseInt(this.maxScrollY)+50){
+                var def = $.Deferred();
+                isLoad = false;
+                _vp.loadIon.loadShow('#' + name);
+                this.refresh();
+                this.scrollTo(0, this.maxScrollY);
+                if(fn1){
+                    fn1().then(function(){
+                        loadText()
+                    })
+                }
+                //loadText();
+            }else if(parseInt(this.y) > 10){
+                isLoad = false;
+                _vp.loadIon.refreshShow('#' + name );
+                this.refresh()
+                this.scrollTo(0, 0);
+                //loadRefresh();
+                if(fn2){
+                    fn2().then(function(){
+                        loadRefresh();
+                    })
+                }
+            }
+        }
+    })
+
+    /* 上拉加载初始化 */
+    function loadText(){ 
+        _vp.loadIon.hide('#'+ name);     //去掉加载动画
+        _vp[name + 'Scroll'].refresh();      //刷新滚动
+        isLoad = true;                  //打开加载开关
+    }
+
+    /* 下拉刷新初始化 */
+    function loadRefresh(){
+        _vp.loadIon.hide('#'+ name);     //去掉加载动画
+        _vp[name + 'Scroll'].refresh();      //刷新滚动
+        isLoad = true;                  //打开加载开关
     }
 }
 
