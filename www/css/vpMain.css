@@ -92,6 +92,19 @@ input[type="button"],input[type="submit"],input[type="text"],input[type="tel"],t
       animation: moveReverse 0.5s cubic-bezier(0.165, 0.840, 0.440, 1.000) 0s both;
 }
 #cacheRegion{display: none;}
+#loadIon{text-align: center;height: 50px;padding: 5px 0px;}
+/* 加载动画 */
+#loadIon img{color: #666;height: 90%; -webkit-animation: infiniteRotate 0.5s linear  infinite;}
+
+@-webkit-keyframes infiniteRotate {
+    0%{   -webkit-transform: rotate(0deg); }
+    100%{ -webkit-transform: rotate(360deg); }
+}
+@keyframes infiniteRotate {
+    0%{    transform: rotate(0deg);}
+    100%{  transform: rotate(360deg);}
+}
+
 
 @-webkit-keyframes moveView {
     0%{   -webkit-transform: translate3d(100%, 0, 0); opacity: 1;}

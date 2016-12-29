@@ -34,7 +34,7 @@ module.exports = function() {
             dest: 'src'
         },
         minify: {
-            js: '-m toplevel',
+            js: '--mangle',
             html: {
                 collapseBooleanAttributes: true,
                 collapseWhitespace: true

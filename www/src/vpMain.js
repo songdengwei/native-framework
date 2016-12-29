@@ -118,6 +118,17 @@ function getBackendDetail( name ) {
     }
     return backendDetail;
 };
+//设备识别来控制iscroll的click真假
+function iScrollClick(){
+    var UA = navigator.userAgent;
+    if (/iPhone|iPad|iPod|Macintosh/i.test(UA)) return true;
+    if (/Chrome/i.test(UA)) return (/Android/i.test(UA));
+    if (/Silk/i.test(UA)) return false;
+    if (/Android/i.test(UA)) {
+        var s = UA.match(/Android [\d+.]{1,5}/)[0].replace('Android ','');
+        return parseFloat(s[0]+s[2]+s[4]) <= 442 && parseFloat(s[0]+s[2]+s[4]) > 430 ? true : false;
+    }
+}
 
 /* 
  *  post请求方法 
@@ -366,12 +377,12 @@ _vp.tabsView = function(parent, name, vessel, isLoad, direction){
                 }
                 //把页面添加到index
                 parent.append(data);
+                _vp[name+'Scroll'] = new IScroll($('#'+ name)[0], { "click" :iScrollClick() ,"tap": true, "probeType": 2});    //初始化滚动
                 //加载对应的js文件
-                loadScript('/src/controller/' + name + '.js' + _vp.v, {async : true}, function( ){
+                loadScript('/src/controller/' + name + '.js' + _vp.v, {"async" : true}, function( ){
                     _vp.loadName.names.push(name);  //防止多重加载
                     _vp.loading.hide();             //关闭加载层
                     _vp.moveView(parent, name, direction);     //移动视图
-                    var myScroll = new IScroll($('#'+ name)[0]);    //初始化滚动
                 })
             })
         }
@@ -450,6 +461,20 @@ _vp.uiHash = function(){
     }, false);
 };
 _vp.uiHash();
+
+/* 加载动画 */
+_vp.loadIon = {
+    html: '<div id="loadIon"><img src="img/loading.png" alt=""></div>',
+    loadShow: function(id){
+        $('.modScroll',$(id)).append(_vp.loadIon.html);
+    },
+    refreshShow: function(id){
+        $('.modScroll',$(id)).prepend(_vp.loadIon.html);
+    },
+    hide: function(id){
+        $('#loadIon',$(id)).remove();
+    }
+}
 
 /**
  *  表单验证
@@ -562,3 +587,5 @@ _vp.setFixed = function( obj ){
 _vp.index = function( ){
 
 };
+
+document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
